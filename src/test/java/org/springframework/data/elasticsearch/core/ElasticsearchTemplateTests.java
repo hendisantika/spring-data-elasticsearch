@@ -1152,7 +1152,7 @@ public class ElasticsearchTemplateTests {
 		assertThat(elasticsearchTemplate.putMapping(entity), is(true));
 		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping(SampleMappingEntity.class);
 		assertThat(mapResult == null, is(false));
-		assertThat(mapResult.get("properties") == null, is(false));
+		assertThat(mapResult.get("properties"), is(notNullValue()));
 	}
 	
 	@Test
@@ -1165,7 +1165,7 @@ public class ElasticsearchTemplateTests {
 		elasticsearchTemplate.putMapping(entity, customIndexName, null);
 		assertThat(elasticsearchTemplate.indexExists(customIndexName), is(true));
 		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping(customIndexName, "mapping");
-		assertThat(mapResult.get("properties") == null, is(false));
+		assertThat(mapResult.get("properties"), is(notNullValue()));
 	}
 	
 	@Test
@@ -1177,7 +1177,7 @@ public class ElasticsearchTemplateTests {
 		elasticsearchTemplate.putMapping(entity, null, "test-custom-mapping-1");
 		assertThat(elasticsearchTemplate.indexExists("test-mapping"), is(true));
 		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping("test-mapping", "test-custom-mapping-1");
-		assertThat(mapResult.get("properties") == null, is(false));
+		assertThat(mapResult.get("properties") , is(notNullValue()));
 	}
 	
 	@Test
@@ -1188,7 +1188,7 @@ public class ElasticsearchTemplateTests {
 		elasticsearchTemplate.putMapping(entity, "test-custom-index-1", "test-custom-mapping-1");
 		assertThat(elasticsearchTemplate.indexExists("test-custom-index-1"), is(true));
 		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping("test-custom-index-1", "test-custom-mapping-1");
-		assertThat(mapResult.get("properties") == null, is(false));
+		assertThat(mapResult.get("properties"), is(notNullValue()));
 	}
 
 	@Test
