@@ -79,11 +79,12 @@ public interface ElasticsearchOperations {
 	<T> boolean createIndex(Class<T> clazz, Object settings);
 
 	/**
-	 * Create mapping for a class, for a specified index and type
+	 * Create mapping for a class, for a specified index and type. If index or type are null,
+	 * it will fall back to the annotation.
 	 *
 	 * @param clazz
-	 * @param indexName
-	 * @param type
+	 * @param indexName If null, it will attempt to use the indexName field from the Document annotation
+	 * @param type If null, it will attempt to use the type field from the Document annotation
 	 * @param <T>
 	 */
 	<T> boolean putMapping(Class<T> clazz, String indexName, String type);
