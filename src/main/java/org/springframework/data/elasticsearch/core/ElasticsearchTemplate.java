@@ -1072,6 +1072,14 @@ public class ElasticsearchTemplate implements ElasticsearchOperations, Applicati
 		return client.admin().indices().getAliases(new GetAliasesRequest().indices(indexName))
 				.actionGet().getAliases().get(indexName);
 	}
+	
+	@Override
+	public Boolean renameAlias(AliasQuery addAlias, AliasQuery removeAlias) {
+		return client.admin().indices().prepareAliases()
+			.removeAlias(removeAlias.getIndexName(), removeAlias.getAliasName())
+			.addAlias(addAlias.getIndexName(), addAlias.getAliasName())
+				.execute().actionGet().isAcknowledged();
+	}
 
 	@Override
 	public ElasticsearchPersistentEntity getPersistentEntityFor(Class clazz) {

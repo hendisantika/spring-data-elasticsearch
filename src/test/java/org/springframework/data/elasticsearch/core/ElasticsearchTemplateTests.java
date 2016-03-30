@@ -28,6 +28,7 @@ import org.elasticsearch.action.get.MultiGetItemResponse;
 import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.cluster.metadata.AliasMetaData;
 import org.elasticsearch.index.engine.DocumentMissingException;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptService;
@@ -2039,6 +2040,51 @@ public class ElasticsearchTemplateTests {
 				"      emailAnalyzer:\n" +
 				"        type: custom\n" +
 				"        tokenizer: uax_url_email\n"));
+	}
+	
+	@Test
+	public void shouldRenameAliasAtomically() {
+		elasticsearchTemplate.deleteIndex(INDEX_1_NAME);
+		elasticsearchTemplate.deleteIndex(INDEX_2_NAME);
+		
+		elasticsearchTemplate.createIndex(INDEX_1_NAME);
+		elasticsearchTemplate.createIndex(INDEX_2_NAME);
+		
+		String aliasName = "test-alias";
+		
+		AliasQuery index1Alias = new AliasQuery();
+		index1Alias.setAliasName(aliasName);
+		index1Alias.setIndexName(INDEX_1_NAME);
+
+		AliasQuery index2Alias = new AliasQuery();
+		index2Alias.setAliasName(aliasName);
+		index2Alias.setIndexName(INDEX_2_NAME);
+		
+		// First, point the alias at index 1
+		
+		elasticsearchTemplate.addAlias(index1Alias);
+		
+		// Verify that it is pointed at index 1
+		
+		List<AliasMetaData> aliasMetaData = elasticsearchTemplate.queryForAlias(INDEX_1_NAME);
+		
+		assertThat(aliasMetaData, is(notNullValue()));
+		assertThat(aliasMetaData.size(), is(equalTo(1)));
+		assertThat(aliasMetaData.get(0).alias(), is(equalTo(aliasName)));
+		
+		// Swap it to index 2
+		
+		elasticsearchTemplate.renameAlias(index2Alias, index1Alias);
+		
+		// Verify that the alias now points to index 2 and not index 1
+		
+		assertThat(elasticsearchTemplate.queryForAlias(INDEX_1_NAME), is(nullValue()));
+		
+		List<AliasMetaData> aliasMetaData2 = elasticsearchTemplate.queryForAlias(INDEX_2_NAME);
+		
+		assertThat(aliasMetaData2, is(notNullValue()));
+		assertThat(aliasMetaData2.size(), is(equalTo(1)));
+		assertThat(aliasMetaData2.get(0).alias(), is(equalTo(aliasName)));
 	}
 
 	private IndexQuery getIndexQuery(SampleEntity sampleEntity) {

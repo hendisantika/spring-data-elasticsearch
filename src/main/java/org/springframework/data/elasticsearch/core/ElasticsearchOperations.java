@@ -594,6 +594,15 @@ public interface ElasticsearchOperations {
 	 * @return
 	 */
 	List<AliasMetaData> queryForAlias(String indexName);
+	
+	/**
+	 * Renames an alias atomically.
+	 * 
+	 * @param addAlias
+	 * @param removeAlias
+	 * @return
+	 */
+	Boolean renameAlias(AliasQuery addAlias, AliasQuery removeAlias);
 
 
 	<T> T query(SearchQuery query, ResultsExtractor<T> resultsExtractor);
