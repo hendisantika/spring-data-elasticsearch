@@ -1150,6 +1150,45 @@ public class ElasticsearchTemplateTests {
 		elasticsearchTemplate.createIndex(entity);
 		// when
 		assertThat(elasticsearchTemplate.putMapping(entity), is(true));
+		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping(SampleMappingEntity.class);
+		assertThat(mapResult == null, is(false));
+		assertThat(mapResult.get("properties") == null, is(false));
+	}
+	
+	@Test
+	public void shouldPutMappingWithCustomIndexName() throws Exception {
+		Class entity = SampleMappingEntity.class;
+		
+		String customIndexName = "test-custom-index-1";
+		elasticsearchTemplate.deleteIndex(customIndexName);
+		elasticsearchTemplate.createIndex(customIndexName);
+		elasticsearchTemplate.putMapping(entity, customIndexName, null);
+		assertThat(elasticsearchTemplate.indexExists(customIndexName), is(true));
+		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping(customIndexName, "mapping");
+		assertThat(mapResult.get("properties") == null, is(false));
+	}
+	
+	@Test
+	public void shouldPutMappingWithCustomTypeName() throws Exception {
+		Class entity = SampleMappingEntity.class;
+		
+		elasticsearchTemplate.deleteIndex("test-mapping");
+		elasticsearchTemplate.createIndex("test-mapping");
+		elasticsearchTemplate.putMapping(entity, null, "test-custom-mapping-1");
+		assertThat(elasticsearchTemplate.indexExists("test-mapping"), is(true));
+		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping("test-mapping", "test-custom-mapping-1");
+		assertThat(mapResult.get("properties") == null, is(false));
+	}
+	
+	@Test
+	public void shouldPutMappingWithCustomIndexAndTypeName() throws Exception {
+		Class entity = SampleMappingEntity.class;
+		
+		elasticsearchTemplate.createIndex("test-custom-index-1");
+		elasticsearchTemplate.putMapping(entity, "test-custom-index-1", "test-custom-mapping-1");
+		assertThat(elasticsearchTemplate.indexExists("test-custom-index-1"), is(true));
+		Map<Object, Object> mapResult = elasticsearchTemplate.getMapping("test-custom-index-1", "test-custom-mapping-1");
+		assertThat(mapResult.get("properties") == null, is(false));
 	}
 
 	@Test

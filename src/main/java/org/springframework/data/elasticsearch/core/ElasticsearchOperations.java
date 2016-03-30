@@ -79,6 +79,16 @@ public interface ElasticsearchOperations {
 	<T> boolean createIndex(Class<T> clazz, Object settings);
 
 	/**
+	 * Create mapping for a class, for a specified index and type
+	 *
+	 * @param clazz
+	 * @param indexName
+	 * @param type
+	 * @param <T>
+	 */
+	<T> boolean putMapping(Class<T> clazz, String indexName, String type);
+	
+	/**
 	 * Create mapping for a class
 	 *
 	 * @param clazz

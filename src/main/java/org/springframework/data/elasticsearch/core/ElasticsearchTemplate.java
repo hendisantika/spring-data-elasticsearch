@@ -162,7 +162,8 @@ public class ElasticsearchTemplate implements ElasticsearchOperations, Applicati
 	}
 
 	@Override
-	public <T> boolean putMapping(Class<T> clazz) {
+	public <T> boolean putMapping(Class<T> clazz, String indexName, String indexType)
+	{
 		if (clazz.isAnnotationPresent(Mapping.class)) {
 			String mappingPath = clazz.getAnnotation(Mapping.class).mappingPath();
 			if (isNotBlank(mappingPath)) {
@@ -175,14 +176,31 @@ public class ElasticsearchTemplate implements ElasticsearchOperations, Applicati
 			}
 		}
 		ElasticsearchPersistentEntity<T> persistentEntity = getPersistentEntityFor(clazz);
+		
+		if(indexName == null)
+		{
+			indexName = persistentEntity.getIndexName();
+		}
+		
+		if(indexType == null)
+		{
+			indexType = persistentEntity.getIndexType();
+		}
+		
 		XContentBuilder xContentBuilder = null;
 		try {
-			xContentBuilder = buildMapping(clazz, persistentEntity.getIndexType(), persistentEntity
+			xContentBuilder = buildMapping(clazz, indexType, persistentEntity
 					.getIdProperty().getFieldName(), persistentEntity.getParentType());
 		} catch (Exception e) {
 			throw new ElasticsearchException("Failed to build mapping for " + clazz.getSimpleName(), e);
 		}
-		return putMapping(clazz, xContentBuilder);
+		return putMapping(indexName, indexType, xContentBuilder);
+	}
+
+	@Override
+	public <T> boolean putMapping(Class<T> clazz) {
+		ElasticsearchPersistentEntity<T> persistentEntity = getPersistentEntityFor(clazz);
+		return putMapping(clazz, persistentEntity.getIndexName(), persistentEntity.getIndexType());
 	}
 
 	@Override
