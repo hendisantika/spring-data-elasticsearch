@@ -1022,6 +1022,10 @@ public class ElasticsearchTemplate implements ElasticsearchOperations, Applicati
 			if (query.getParentId() != null) {
 				indexRequestBuilder.setParent(query.getParentId());
 			}
+			
+			if (query.getTtl() != null) {
+				indexRequestBuilder.setTTL(query.getTtl());
+			}
 
 			return indexRequestBuilder;
 		} catch (IOException e) {

@@ -15,6 +15,8 @@
  */
 package org.springframework.data.elasticsearch.core.query;
 
+import org.elasticsearch.common.unit.TimeValue;
+
 /**
  * IndexQuery
  *
@@ -31,6 +33,7 @@ public class IndexQuery {
 	private String type;
 	private String source;
 	private String parentId;
+	private TimeValue ttl;
 
 	public String getId() {
 		return id;
@@ -86,5 +89,13 @@ public class IndexQuery {
 
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+	}
+
+	public TimeValue getTtl() {
+		return ttl;
+	}
+
+	public void setTtl(TimeValue ttl) {
+		this.ttl = ttl;
 	}
 }
